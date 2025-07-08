@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import {
-  FaBars, FaTimes, FaTachometerAlt, FaUsers, FaChartLine, FaSignOutAlt,
+  FaBars, FaTimes, FaTachometerAlt, FaUsers, FaChartLine, FaGift,
   FaSearch, FaCog, FaUser, FaClipboardList
 } from 'react-icons/fa';
+import { FaRegRectangleList, FaCartShopping  } from 'react-icons/fa6';
+import { MdInsertChartOutlined } from 'react-icons/md';
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -14,10 +16,10 @@ export default function Navbar() {
 
   const links = [
     { id: 'dashboard', label: 'Dashboard', icon: <FaTachometerAlt /> },
-    { id: 'cadastros', label: 'Cadastros', icon: <FaClipboardList />, submenu: showCadastros },
-    { id: 'despesas', label: 'Lançamento Despesa', icon: <FaUsers />, submenu: showDespesas },
-    { id: 'receitas', label: 'Lançamento Receita', icon: <FaUsers />, submenu: showReceitas },
-    { id: 'relatorios', label: 'Relatórios Gerenciais', icon: <FaChartLine />, submenu: showRelatorios },
+    { id: 'cadastros', label: 'Cadastros', icon: <FaRegRectangleList />, submenu: showCadastros },
+    { id: 'despesas', label: 'Lançamento Despesa', icon: <FaCartShopping />, submenu: showDespesas },
+    { id: 'receitas', label: 'Lançamento Receita', icon: <FaGift />, submenu: showReceitas },
+    { id: 'relatorios', label: 'Relatórios Gerenciais', icon: <MdInsertChartOutlined />, submenu: showRelatorios },
   ];
 
   const cadastrosOptions = [
