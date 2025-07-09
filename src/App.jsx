@@ -1,51 +1,57 @@
-/*
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
-
-export default App
-*/
+import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar/Navbar';
+
+import Dashboard from './pages/Dashboard/Dashboard';
+import Bens from './pages/Cadastros/Bens/Bens';
+import CentroCustos from './pages/Cadastros/CentroCustos/CentroCustos';
+import CentroLucros from './pages/Cadastros/CentroLucros/CentroLucros';
+import ClienteFornecedor from './pages/Cadastros/ClienteFornecedor/ClienteFornecedor';
+import Funcionarios from './pages/Cadastros/Funcionarios/Funcionarios';
+import CadInsumos from './pages/Cadastros/Insumos/Insumos';
+import Taxas from './pages/Cadastros/Taxas/Taxas';
+import UnidadeNegocios from './pages/Cadastros/UnidadeNegocios/UnidadeNegocios';
+
+import Insumos from './pages/Despesas/Insumos/Insumos';
+import PagamentoFuncionarios from './pages/Despesas/PagamentoFuncionarios/PagamentoFuncionarios';
+
+import Produtos from './pages/Receitas/Produtos/Produtos';
+
+import DemonstracaoResultado from './pages/RelatoriosGerenciais/DemonstracaoResultado/DemonstracaoResultado';
+import ResumoDespesas from './pages/RelatoriosGerenciais/ResumoDespesas/ResumoDespesas';
+import ResumoReceitas from './pages/RelatoriosGerenciais/ResumoReceitas/ResumoReceitas';
+
+import Enderecos from './pages/System/Enderecos/Enderecos';
 
 export default function App() {
   return (
     <>
       <Navbar />
-      <main className="p-6 bg-gray-50 min-h-screen">
-        <h2 className="text-3xl font-semibold mb-4">Bem-vindo ao Painel Administrativo</h2>
-        <p className="text-gray-700">Escolha uma opção no menu acima para começar.</p>
-    
-      </main>
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/cadastros/bens" element={<Bens />} />
+        <Route path="/cadastros/centro_custos" element={<CentroCustos />} />
+        <Route path="/cadastros/centro_lucros" element={<CentroLucros />} />
+        <Route path="/cadastros/cliente_fornecedor" element={<ClienteFornecedor />} />
+        <Route path="/cadastros/funcionarios" element={<Funcionarios />} />
+        <Route path="/cadastros/insumos" element={<CadInsumos />} />
+        <Route path="/cadastros/taxas" element={<Taxas />} />
+        <Route path="/cadastros/unidade_negocio" element={<UnidadeNegocios />} />
+        
+        <Route path="/despesas/insumos" element={<Insumos />} />
+        <Route path="/despesas/pagamento_funcionario" element={<PagamentoFuncionarios />} />
+        
+        <Route path="/receitas/produtos" element={<Produtos />} />
+        
+        <Route path="/relatorios/demonstracao_resultado" element={<DemonstracaoResultado />} />
+        <Route path="/relatorios/resumo_despesa" element={<ResumoDespesas />} />
+        <Route path="/relatorios/resumo_receita" element={<ResumoReceitas />} />
+
+        <Route path="/perfil" element={<Enderecos />} />        
+        <Route path="/system/enderecos" element={<Enderecos />} />
+        {/* Adicione os demais caminhos aqui */}
+
+      </Routes>
     </>
   );
 }
