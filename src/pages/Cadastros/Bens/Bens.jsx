@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import FormBem from "./FormBem";
 
 const bensIniciais = [
     { id: 1, descricao: "BOMBA FILTRO INTERNO JP-023F", criterio: "UN", valor: 95.0 },
@@ -52,7 +53,21 @@ export default function BensPage() {
     };
 
     // Botões ações (exemplo)
-    const handleIncluir = () => alert("Incluir clicado");
+    const [exibindoFormulario, setExibindoFormulario] = useState(false);
+
+    const handleIncluir = () => {
+        setExibindoFormulario(true);
+    };
+
+    const salvarNovoBem = (novoBem) => {
+        setBens((prev) => [...prev, novoBem]);
+        setExibindoFormulario(false);
+    };
+
+    const cancelarModal = () => {
+        setExibindoFormulario(false);
+    };
+
     const handleEditar = () => {
         if (selectedIds.size !== 1) {
             alert("Selecione exatamente 1 item para editar");
@@ -222,6 +237,9 @@ export default function BensPage() {
                     &gt;
                 </button>
             </div>
+            {exibindoFormulario && (
+                <FormBem onSalvar={salvarNovoBem} onCancelar={cancelarModal} />
+            )}
         </div>
     );
 }
