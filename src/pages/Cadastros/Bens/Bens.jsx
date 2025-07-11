@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import FormBem from "./FormBem";
 
-const bensIniciais = [
+const dadosIniciais = [
     { id: 1, descricao: "BOMBA FILTRO INTERNO JP-023F", criterio: "UN", valor: 95.0 },
     { id: 2, descricao: "BOMBA SUBMERSA 2500 L/H", criterio: "UN", valor: 239.0 },
     { id: 3, descricao: "CERCA ARAME FARPADO", criterio: "UN", valor: 10000.0 },
@@ -12,7 +12,7 @@ const bensIniciais = [
 ];
 
 export default function BensPage() {
-    const [bens, setBens] = useState(bensIniciais);
+    const [dados, setBens] = useState(dadosIniciais);
     const [filtroDescricao, setFiltroDescricao] = useState("");
     const [criterioAlocacao, setCriterioAlocacao] = useState("");
     const [selectedIds, setSelectedIds] = useState(new Set());
@@ -20,16 +20,16 @@ export default function BensPage() {
 
     const itensPorPagina = 5;
 
-    // Filtra bens pela descrição e critério de alocação (se usar)
-    const bensFiltrados = useMemo(() => {
-        return bens.filter((b) =>
+    // Filtra dados pela descrição e critério de alocação (se usar)
+    const dadosFiltrados = useMemo(() => {
+        return dados.filter((b) =>
             b.descricao.toLowerCase().includes(filtroDescricao.toLowerCase())
             // Aqui você pode incluir filtro pelo critérioAlocacao, se fizer sentido no seu domínio
         );
-    }, [bens, filtroDescricao]);
+    }, [dados, filtroDescricao]);
 
-    const totalPaginas = Math.ceil(bensFiltrados.length / itensPorPagina);
-    const bensPaginaAtual = bensFiltrados.slice(
+    const totalPaginas = Math.ceil(dadosFiltrados.length / itensPorPagina);
+    const dadosPaginaAtual = dadosFiltrados.slice(
         (paginaAtual - 1) * itensPorPagina,
         paginaAtual * itensPorPagina
     );
@@ -46,7 +46,7 @@ export default function BensPage() {
 
     const selecionarTodos = (e) => {
         if (e.target.checked) {
-            setSelectedIds(new Set(bensPaginaAtual.map((b) => b.id)));
+            setSelectedIds(new Set(dadosPaginaAtual.map((b) => b.id)));
         } else {
             setSelectedIds(new Set());
         }
@@ -54,14 +54,25 @@ export default function BensPage() {
 
     // Botões ações (exemplo)
     const [exibindoFormulario, setExibindoFormulario] = useState(false);
+    const [registroEditando, setBemEditando] = useState(null);
 
     const handleIncluir = () => {
+        setBemEditando(null); // modo inclusão
         setExibindoFormulario(true);
     };
 
-    const salvarNovoBem = (novoBem) => {
-        setBens((prev) => [...prev, novoBem]);
+    const salvarFormulario = (registro) => {
+        if (registroEditando) {
+            setBens((prev) =>
+            prev.map((b) => (b.id === registro.id ? registro : b))
+            );
+        } else {
+            setBens((prev) => [...prev, registro]);
+        }
+
         setExibindoFormulario(false);
+        setBemEditando(null);
+        setSelectedIds(new Set());
     };
 
     const cancelarModal = () => {
@@ -73,8 +84,14 @@ export default function BensPage() {
             alert("Selecione exatamente 1 item para editar");
             return;
         }
-        alert("Editar item id: " + [...selectedIds][0]);
+
+        const idParaEditar = [...selectedIds][0];
+        const registroSelecionado = dados.find((b) => b.id === idParaEditar);
+
+        setBemEditando(registroSelecionado); // envia o registro pro modal
+        setExibindoFormulario(true);
     };
+
     const handleExcluir = () => {
         if (selectedIds.size === 0) {
             alert("Selecione pelo menos 1 item para excluir");
@@ -115,7 +132,7 @@ export default function BensPage() {
                 <div className="mt-6 flex justify-start">
                     <button
                         onClick={() => setPaginaAtual(1)}
-                        className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 transition-shadow shadow-md"
+                        className="bg-emerald-500 text-white px-3 py-0.5 rounded hover:bg-emerald-600 transition-shadow shadow-md"
                     >
                         Procurar
                     </button>
@@ -127,35 +144,35 @@ export default function BensPage() {
             <div className="mb-1 flex flex-wrap gap-2">
                 <button
                     onClick={handleIncluir}
-                    className="bg-gray-700 text-white px-4 py-1 rounded hover:bg-gray-800 transition"
+                    className="bg-gray-700 text-white px-3 py-0.5 rounded hover:bg-emerald-500 transition"
                 >
                     Incluir
                 </button>
                 <button
                     onClick={handleEditar}
                     disabled={selectedIds.size !== 1}
-                    className="bg-gray-400 text-gray-700 px-4 py-1 rounded disabled:opacity-50"
+                    className="bg-gray-700 text-white px-3 py-0.5 rounded hover:bg-emerald-500 transition disabled:opacity-50"
                 >
                     Editar
                 </button>
                 <button
                     onClick={handleExcluir}
                     disabled={selectedIds.size === 0}
-                    className="bg-gray-400 text-gray-700 px-4 py-1 rounded disabled:opacity-50"
+                    className="bg-gray-700 text-white px-3 py-0.5 rounded hover:bg-emerald-500 transition disabled:opacity-50"
                 >
                     Excluir
                 </button>
                 <button
                     onClick={handleRateio}
-                    disabled={selectedIds.size === 0}
-                    className="bg-gray-400 text-gray-700 px-4 py-1 rounded disabled:opacity-50"
+                    disabled={selectedIds.size !== 1}
+                    className="bg-gray-700 text-white px-3 py-0.5 rounded hover:bg-emerald-500 transition disabled:opacity-50"
                 >
                     Rateio
                 </button>
                 <button
                     onClick={handleDepreciacao}
-                    disabled={selectedIds.size === 0}
-                    className="bg-gray-400 text-gray-700 px-4 py-1 rounded disabled:opacity-50"
+                    disabled={selectedIds.size !== 1}
+                    className="bg-gray-700 text-white px-3 py-0.5 rounded hover:bg-emerald-500 transition disabled:opacity-50"
                 >
                     Depreciação
                 </button>
@@ -170,8 +187,8 @@ export default function BensPage() {
                                 <input
                                     type="checkbox"
                                     checked={
-                                        bensPaginaAtual.length > 0 &&
-                                        bensPaginaAtual.every((b) => selectedIds.has(b.id))
+                                        dadosPaginaAtual.length > 0 &&
+                                        dadosPaginaAtual.every((b) => selectedIds.has(b.id))
                                     }
                                     onChange={selecionarTodos}
                                 />
@@ -182,17 +199,19 @@ export default function BensPage() {
                         </tr>
                     </thead>
                     <tbody>
-                        {bensPaginaAtual.length === 0 && (
+                        {dadosPaginaAtual.length === 0 && (
                             <tr>
                                 <td colSpan={4} className="p-6 text-center text-gray-500">
-                                    Nenhum bem encontrado.
+                                    Nenhum registro encontrado.
                                 </td>
                             </tr>
                         )}
 
-                        {bensPaginaAtual.map(({ id, descricao, criterio, valor }) => (
+                        {dadosPaginaAtual.map(({ id, descricao, criterio, valor }) => (
                             <tr
+                                
                                 key={id}
+                                onClick={() => toggleSelecionado(id)}
                                 className={`border-b border-gray-200 ${selectedIds.has(id) ? "bg-emerald-100" : ""
                                     }`}
                             >
@@ -238,7 +257,11 @@ export default function BensPage() {
                 </button>
             </div>
             {exibindoFormulario && (
-                <FormBem onSalvar={salvarNovoBem} onCancelar={cancelarModal} />
+                <FormBem
+                    onSalvar={salvarFormulario}
+                    onCancelar={cancelarModal}
+                    registro={registroEditando} // ← importante
+                />
             )}
         </div>
     );

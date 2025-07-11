@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 
-const bensIniciais = [
+const dadosIniciais = [
     { id: 1, descricao: "BOMBA FILTRO INTERNO JP-023F", criterio: "UN", valor: 95.0 },
     { id: 2, descricao: "BOMBA SUBMERSA 2500 L/H", criterio: "UN", valor: 239.0 },
     { id: 3, descricao: "CERCA ARAME FARPADO", criterio: "UN", valor: 10000.0 },
@@ -11,7 +11,7 @@ const bensIniciais = [
 ];
 
 export default function DemonstracaoResultadoPage() {
-    const [bens, setDemonstracaoResultado] = useState(bensIniciais);
+    const [dados, setBens] = useState(dadosIniciais);
     const [filtroDescricao, setFiltroDescricao] = useState("");
     const [criterioAlocacao, setCriterioAlocacao] = useState("");
     const [selectedIds, setSelectedIds] = useState(new Set());
@@ -19,16 +19,16 @@ export default function DemonstracaoResultadoPage() {
 
     const itensPorPagina = 5;
 
-    // Filtra bens pela descrição e critério de alocação (se usar)
-    const bensFiltrados = useMemo(() => {
-        return bens.filter((b) =>
+    // Filtra dados pela descrição e critério de alocação (se usar)
+    const dadosFiltrados = useMemo(() => {
+        return dados.filter((b) =>
             b.descricao.toLowerCase().includes(filtroDescricao.toLowerCase())
             // Aqui você pode incluir filtro pelo critérioAlocacao, se fizer sentido no seu domínio
         );
-    }, [bens, filtroDescricao]);
+    }, [dados, filtroDescricao]);
 
-    const totalPaginas = Math.ceil(bensFiltrados.length / itensPorPagina);
-    const bensPaginaAtual = bensFiltrados.slice(
+    const totalPaginas = Math.ceil(dadosFiltrados.length / itensPorPagina);
+    const dadosPaginaAtual = dadosFiltrados.slice(
         (paginaAtual - 1) * itensPorPagina,
         paginaAtual * itensPorPagina
     );
@@ -45,14 +45,28 @@ export default function DemonstracaoResultadoPage() {
 
     const selecionarTodos = (e) => {
         if (e.target.checked) {
-            setSelectedIds(new Set(bensPaginaAtual.map((b) => b.id)));
+            setSelectedIds(new Set(dadosPaginaAtual.map((b) => b.id)));
         } else {
             setSelectedIds(new Set());
         }
     };
 
     // Botões ações (exemplo)
-    const handleIncluir = () => alert("Incluir clicado");
+    const [exibindoFormulario, setExibindoFormulario] = useState(false);
+
+    const handleIncluir = () => {
+        setExibindoFormulario(true);
+    };
+
+    const salvarFormulario = (novoBem) => {
+        setBens((prev) => [...prev, novoBem]);
+        setExibindoFormulario(false);
+    };
+
+    const cancelarModal = () => {
+        setExibindoFormulario(false);
+    };
+
     const handleEditar = () => {
         if (selectedIds.size !== 1) {
             alert("Selecione exatamente 1 item para editar");
@@ -66,7 +80,7 @@ export default function DemonstracaoResultadoPage() {
             return;
         }
         if (window.confirm(`Excluir ${selectedIds.size} item(s)?`)) {
-            setDemonstracaoResultado((prev) => prev.filter((b) => !selectedIds.has(b.id)));
+            setBens((prev) => prev.filter((b) => !selectedIds.has(b.id)));
             setSelectedIds(new Set());
         }
     };
@@ -155,8 +169,8 @@ export default function DemonstracaoResultadoPage() {
                                 <input
                                     type="checkbox"
                                     checked={
-                                        bensPaginaAtual.length > 0 &&
-                                        bensPaginaAtual.every((b) => selectedIds.has(b.id))
+                                        dadosPaginaAtual.length > 0 &&
+                                        dadosPaginaAtual.every((b) => selectedIds.has(b.id))
                                     }
                                     onChange={selecionarTodos}
                                 />
@@ -167,7 +181,7 @@ export default function DemonstracaoResultadoPage() {
                         </tr>
                     </thead>
                     <tbody>
-                        {bensPaginaAtual.length === 0 && (
+                        {dadosPaginaAtual.length === 0 && (
                             <tr>
                                 <td colSpan={4} className="p-6 text-center text-gray-500">
                                     Nenhum bem encontrado.
@@ -175,7 +189,7 @@ export default function DemonstracaoResultadoPage() {
                             </tr>
                         )}
 
-                        {bensPaginaAtual.map(({ id, descricao, criterio, valor }) => (
+                        {dadosPaginaAtual.map(({ id, descricao, criterio, valor }) => (
                             <tr
                                 key={id}
                                 className={`border-b border-gray-200 ${selectedIds.has(id) ? "bg-emerald-100" : ""
