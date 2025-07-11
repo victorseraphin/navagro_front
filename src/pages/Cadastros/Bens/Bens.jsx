@@ -12,7 +12,7 @@ const dadosIniciais = [
 ];
 
 export default function BensPage() {
-    const [dados, setBens] = useState(dadosIniciais);
+    const [dados, setDados] = useState(dadosIniciais);
     const [filtroDescricao, setFiltroDescricao] = useState("");
     const [criterioAlocacao, setCriterioAlocacao] = useState("");
     const [selectedIds, setSelectedIds] = useState(new Set());
@@ -54,24 +54,24 @@ export default function BensPage() {
 
     // Botões ações (exemplo)
     const [exibindoFormulario, setExibindoFormulario] = useState(false);
-    const [registroEditando, setBemEditando] = useState(null);
+    const [registroEditando, setRegistroEditando] = useState(null);
 
     const handleIncluir = () => {
-        setBemEditando(null); // modo inclusão
+        setRegistroEditando(null); // modo inclusão
         setExibindoFormulario(true);
     };
 
     const salvarFormulario = (registro) => {
         if (registroEditando) {
-            setBens((prev) =>
-            prev.map((b) => (b.id === registro.id ? registro : b))
+            setDados((prev) =>
+                prev.map((b) => (b.id === registro.id ? registro : b))
             );
         } else {
-            setBens((prev) => [...prev, registro]);
+            setDados((prev) => [...prev, registro]);
         }
 
         setExibindoFormulario(false);
-        setBemEditando(null);
+        setRegistroEditando(null);
         setSelectedIds(new Set());
     };
 
@@ -88,7 +88,7 @@ export default function BensPage() {
         const idParaEditar = [...selectedIds][0];
         const registroSelecionado = dados.find((b) => b.id === idParaEditar);
 
-        setBemEditando(registroSelecionado); // envia o registro pro modal
+        setRegistroEditando(registroSelecionado); // envia o registro pro modal
         setExibindoFormulario(true);
     };
 
@@ -98,7 +98,7 @@ export default function BensPage() {
             return;
         }
         if (window.confirm(`Excluir ${selectedIds.size} item(s)?`)) {
-            setBens((prev) => prev.filter((b) => !selectedIds.has(b.id)));
+            setDados((prev) => prev.filter((b) => !selectedIds.has(b.id)));
             setSelectedIds(new Set());
         }
     };
@@ -112,21 +112,38 @@ export default function BensPage() {
                 <h2 className="font-semibold text-xl mb-4 text-gray-700">Bens</h2>
 
                 {/* Cada input em sua linha */}
-                <div className="flex flex-col gap-4">
-                    <div className="flex flex-col">
-                        <label htmlFor="descricao" className="mb-1 font-medium text-sm text-gray-600">
+                <div className="flex flex-col gap-4 w-full">
+                    {/* Linha 1 - Descrição (col-4) */}
+                    <div className="w-full lg:w-1/3">
+                        <label htmlFor="descricao" className="block text-sm font-medium text-gray-600 mb-1">
                             Descrição
                         </label>
                         <input
                             id="descricao"
                             type="text"
                             placeholder="Descrição"
-                            className="border border-gray-300 rounded px-3 py-1 focus:outline-none focus:ring-2 focus:ring-emerald-400 w-full md:min-w-[300px] "
+                            className="border border-gray-300 rounded px-3 py-0.5 focus:outline-none focus:ring-2 focus:ring-emerald-400 w-full"
                             value={filtroDescricao}
                             onChange={(e) => setFiltroDescricao(e.target.value)}
-                            />
+                        />
+                    </div>
+
+                    {/* Linha 2 - Critério (col-2) */}
+                    <div className="w-full lg:w-1/6">
+                        <label htmlFor="criterio" className="block text-sm font-medium text-gray-600 mb-1">
+                            Critério
+                        </label>
+                        <input
+                            id="criterio"
+                            type="text"
+                            placeholder="Critério"
+                            className="border border-gray-300 rounded px-3 py-0.5 focus:outline-none focus:ring-2 focus:ring-emerald-400 w-full"
+                            value={filtroDescricao}
+                            onChange={(e) => setFiltroDescricao(e.target.value)}
+                        />
                     </div>
                 </div>
+
 
                 {/* Botão alinhado à esquerda, abaixo dos inputs */}
                 <div className="mt-6 flex justify-start">
@@ -209,13 +226,13 @@ export default function BensPage() {
 
                         {dadosPaginaAtual.map(({ id, descricao, criterio, valor }) => (
                             <tr
-                                
+
                                 key={id}
                                 onClick={() => toggleSelecionado(id)}
                                 className={`border-b border-gray-200 ${selectedIds.has(id) ? "bg-emerald-100" : ""
                                     }`}
                             >
-                                <td className="p-3 text-center">
+                                <td className="p-3 text-center" onClick={(e) => e.stopPropagation()}>
                                     <input
                                         type="checkbox"
                                         checked={selectedIds.has(id)}

@@ -1,91 +1,104 @@
-import { useState } from "react";
-import { FiX } from "react-icons/fi"; // ícone X preto
+import { useEffect, useState } from "react";
+import { FiX } from "react-icons/fi";
 
-export default function FormFuncionarios({ onSalvar, onCancelar }) {
-    const [descricao, setDescricao] = useState("");
-    const [criterio, setCriterio] = useState("");
-    const [valor, setValor] = useState("");
+export default function FormFuncionarios({ onSalvar, onCancelar, registro }) {
+  const [descricao, setDescricao] = useState("");
+  const [criterio, setCriterio] = useState("");
+  const [valor, setValor] = useState("");
 
-    const handleSalvar = () => {
-        if (!descricao || !criterio || !valor) {
-            alert("Preencha todos os campos.");
-            return;
-        }
+  // Preenche os campos se estiver em modo de edição
+  useEffect(() => {
+    if (registro) {
+      setDescricao(registro.descricao || "");
+      setCriterio(registro.criterio || "");
+      setValor(registro.valor?.toString() || "");
+    }
+  }, [registro]);
 
-        const novoRegistro = {
-            id: Date.now(),
-            descricao,
-            criterio,
-            valor: parseFloat(valor),
-        };
+  const handleSalvar = () => {
+    if (!descricao || !criterio || !valor) {
+      alert("Preencha todos os campos.");
+      return;
+    }
 
-        onSalvar(novoRegistro);
+    const novoRegistro = {
+      id: registro?.id || Date.now(), // se está editando, mantém o ID
+      descricao,
+      criterio,
+      valor: parseFloat(valor),
     };
 
-    return (
-        <div className="fixed inset-0 z-50 bg-white flex flex-col overflow-auto">
-            {/* Barra superior preta */}
-            <div className="flex items-center justify-between px-4 py-3 border-b shadow-sm sticky top-0 bg-black z-10 text-white">
-                {/* Botão X com texto vermelho */}
-                <button
-                    onClick={onCancelar}
-                    className="flex items-center gap-2 px-4 py-1.5 rounded-full hover:bg-gray-900"
-                    aria-label="Fechar"
-                >
-                    <FiX className="text-white text-xl bg-black p-0.1 hover:bg-gray-900" />
-                </button>
+    onSalvar(novoRegistro);
+  };
 
-                {/* Título centralizado */}
-                <h2 className="text-base font-semibold text-white">Funcionários</h2>
+  return (
+    <div className="fixed inset-0 z-50 bg-white flex flex-col overflow-auto">
+      {/* Barra superior */}
+      <div className="flex items-center justify-between px-4 py-3 border-b shadow-sm sticky top-0 bg-lime-900 z-10 text-white">
+        <button
+          onClick={onCancelar}
+          className="flex items-center gap-2 px-4 py-1.5 rounded-full hover:bg-lime-950"
+          aria-label="Fechar"
+        >
+          <FiX className="text-red-500 text-xl bg-red rounded-full p-0.5" />
+        </button>
 
-                {/* Botão Salvar com fundo preto (igual à barra) */}
-                <button
-                    onClick={handleSalvar}
-                    className="text-sm font-medium bg-black text-white px-4 py-1.5 rounded-full hover:bg-gray-900"
-                >
-                    Salvar
-                </button>
+        <h2 className="text-base font-semibold text-white">
+          {registro ? "Editar Funcionário" : "Novo Funcionário"}
+        </h2>
+
+        <button
+          onClick={handleSalvar}
+          className="text-sm font-medium bg-lime-900 text-white px-4 py-1.5 rounded-full hover:bg-lime-950"
+        >
+          Salvar
+        </button>
+      </div>
+
+      {/* Conteúdo do formulário */}
+      <div className="flex-1 px-6 py-6 overflow-y-auto">
+        <form onSubmit={(e) => e.preventDefault()} className="w-full flex flex-col gap-6">
+          {/* Linha: Descrição e Critério */}
+          <div className="flex flex-col lg:flex-row gap-4 w-full">
+            <div className="w-full lg:w-2/3">
+              <label className="block text-sm font-medium text-gray-600 mb-1">Descrição</label>
+              <input
+                type="text"
+                value={descricao}
+                onChange={(e) => setDescricao(e.target.value)}
+                className="w-full border border-gray-300 px-3 py-1 rounded text-sm"
+                placeholder="Digite a descrição do registro"
+              />
             </div>
 
-            {/* Conteúdo do formulário */}
-            <form onSubmit={(e) => e.preventDefault()} className="p-6 space-y-6 w-full mx-auto">
-                {/* Linha: Descrição e Critério */}
-                <div className="flex flex-col lg:flex-row gap-4">
-                    <div className="w-full lg:w-2/4">
-                    <label className="block text-sm font-medium text-gray-600 mb-1">Descrição</label>
-                    <input
-                        type="text"
-                        value={descricao}
-                        onChange={(e) => setDescricao(e.target.value)}
-                        className="w-full border border-gray-300 px-3 py-1 rounded"
-                        placeholder="Digite a descrição do bem"
-                    />
-                    </div>
+            <div className="w-full lg:w-1/3">
+              <label className="block text-sm font-medium text-gray-600 mb-1">Critério</label>
+              <input
+                type="text"
+                value={criterio}
+                onChange={(e) => setCriterio(e.target.value)}
+                className="w-full border border-gray-300 px-3 py-1 rounded text-sm"
+                placeholder="UN, KG, L, etc."
+              />
+            </div>
+          </div>
 
-                    <div className="w-full lg:w-1/4">
-                    <label className="block text-sm font-medium text-gray-600 mb-1">Critério</label>
-                    <input
-                        type="text"
-                        value={criterio}
-                        onChange={(e) => setCriterio(e.target.value)}
-                        className="w-full border border-gray-300 px-3 py-1 rounded"
-                        placeholder="UN, KG, L, etc."
-                    />
-                    </div>
-
-                    <div className="w-full md:w-1/4">
-                    <label className="block text-sm font-medium text-gray-600 mb-1">Valor</label>
-                    <input
-                        type="number"
-                        step="0.01"
-                        value={valor}
-                        onChange={(e) => setValor(e.target.value)}
-                        className="w-full border border-gray-300 px-3 py-1 rounded"
-                        placeholder="Ex: 199.90"
-                    />
-                    </div>
-                </div>
-            </form>
-        </div>
-    );
+          {/* Linha: Valor */}
+          <div className="flex flex-col md:flex-row gap-4 w-full">
+            <div className="w-full md:w-1/3">
+              <label className="block text-sm font-medium text-gray-600 mb-1">Valor</label>
+              <input
+                type="number"
+                step="0.01"
+                value={valor}
+                onChange={(e) => setValor(e.target.value)}
+                className="w-full border border-gray-300 px-3 py-1 rounded text-sm"
+                placeholder="Ex: 199.90"
+              />
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 }

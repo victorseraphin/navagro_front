@@ -21,14 +21,14 @@ export default function FormBem({ onSalvar, onCancelar, registro }) {
       return;
     }
 
-    const novoBem = {
+    const novoRegistro = {
       id: registro?.id || Date.now(), // se está editando, mantém o ID
       descricao,
       criterio,
       valor: parseFloat(valor),
     };
 
-    onSalvar(novoBem);
+    onSalvar(novoRegistro);
   };
 
   return (

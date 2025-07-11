@@ -12,7 +12,7 @@ const dadosIniciais = [
 ];
 
 export default function CentroLucrosPage() {
-    const [dados, setBens] = useState(dadosIniciais);
+    const [dados, setDados] = useState(dadosIniciais);
     const [filtroDescricao, setFiltroDescricao] = useState("");
     const [criterioAlocacao, setCriterioAlocacao] = useState("");
     const [selectedIds, setSelectedIds] = useState(new Set());
@@ -54,14 +54,25 @@ export default function CentroLucrosPage() {
 
     // Botões ações (exemplo)
     const [exibindoFormulario, setExibindoFormulario] = useState(false);
+    const [registroEditando, setRegistroEditando] = useState(null);
 
     const handleIncluir = () => {
+        setRegistroEditando(null); // modo inclusão
         setExibindoFormulario(true);
     };
 
-    const salvarFormulario = (novoBem) => {
-        setBens((prev) => [...prev, novoBem]);
+    const salvarFormulario = (registro) => {
+        if (registroEditando) {
+            setDados((prev) =>
+            prev.map((b) => (b.id === registro.id ? registro : b))
+            );
+        } else {
+            setDados((prev) => [...prev, registro]);
+        }
+
         setExibindoFormulario(false);
+        setRegistroEditando(null);
+        setSelectedIds(new Set());
     };
 
     const cancelarModal = () => {
@@ -73,15 +84,21 @@ export default function CentroLucrosPage() {
             alert("Selecione exatamente 1 item para editar");
             return;
         }
-        alert("Editar item id: " + [...selectedIds][0]);
+
+        const idParaEditar = [...selectedIds][0];
+        const registroSelecionado = dados.find((b) => b.id === idParaEditar);
+
+        setRegistroEditando(registroSelecionado); // envia o registro pro modal
+        setExibindoFormulario(true);
     };
+
     const handleExcluir = () => {
         if (selectedIds.size === 0) {
             alert("Selecione pelo menos 1 item para excluir");
             return;
         }
         if (window.confirm(`Excluir ${selectedIds.size} item(s)?`)) {
-            setBens((prev) => prev.filter((b) => !selectedIds.has(b.id)));
+            setDados((prev) => prev.filter((b) => !selectedIds.has(b.id)));
             setSelectedIds(new Set());
         }
     };
@@ -115,7 +132,7 @@ export default function CentroLucrosPage() {
                 <div className="mt-6 flex justify-start">
                     <button
                         onClick={() => setPaginaAtual(1)}
-                        className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 transition-shadow shadow-md"
+                        className="bg-emerald-500 text-white px-3 py-0.5 rounded hover:bg-emerald-600 transition-shadow shadow-md"
                     >
                         Procurar
                     </button>
@@ -127,35 +144,35 @@ export default function CentroLucrosPage() {
             <div className="mb-1 flex flex-wrap gap-2">
                 <button
                     onClick={handleIncluir}
-                    className="bg-gray-700 text-white px-4 py-1 rounded hover:bg-gray-800 transition"
+                    className="bg-gray-700 text-white px-3 py-0.5 rounded hover:bg-emerald-500 transition"
                 >
                     Incluir
                 </button>
                 <button
                     onClick={handleEditar}
                     disabled={selectedIds.size !== 1}
-                    className="bg-gray-400 text-gray-700 px-4 py-1 rounded disabled:opacity-50"
+                    className="bg-gray-700 text-white px-3 py-0.5 rounded hover:bg-emerald-500 transition disabled:opacity-50"
                 >
                     Editar
                 </button>
                 <button
                     onClick={handleExcluir}
                     disabled={selectedIds.size === 0}
-                    className="bg-gray-400 text-gray-700 px-4 py-1 rounded disabled:opacity-50"
+                    className="bg-gray-700 text-white px-3 py-0.5 rounded hover:bg-emerald-500 transition disabled:opacity-50"
                 >
                     Excluir
                 </button>
                 <button
                     onClick={handleRateio}
-                    disabled={selectedIds.size === 0}
-                    className="bg-gray-400 text-gray-700 px-4 py-1 rounded disabled:opacity-50"
+                    disabled={selectedIds.size !== 1}
+                    className="bg-gray-700 text-white px-3 py-0.5 rounded hover:bg-emerald-500 transition disabled:opacity-50"
                 >
                     Rateio
                 </button>
                 <button
                     onClick={handleDepreciacao}
-                    disabled={selectedIds.size === 0}
-                    className="bg-gray-400 text-gray-700 px-4 py-1 rounded disabled:opacity-50"
+                    disabled={selectedIds.size !== 1}
+                    className="bg-gray-700 text-white px-3 py-0.5 rounded hover:bg-emerald-500 transition disabled:opacity-50"
                 >
                     Depreciação
                 </button>
@@ -185,18 +202,20 @@ export default function CentroLucrosPage() {
                         {dadosPaginaAtual.length === 0 && (
                             <tr>
                                 <td colSpan={4} className="p-6 text-center text-gray-500">
-                                    Nenhum bem encontrado.
+                                    Nenhum registro encontrado.
                                 </td>
                             </tr>
                         )}
 
                         {dadosPaginaAtual.map(({ id, descricao, criterio, valor }) => (
                             <tr
+                                
                                 key={id}
+                                onClick={() => toggleSelecionado(id)}
                                 className={`border-b border-gray-200 ${selectedIds.has(id) ? "bg-emerald-100" : ""
                                     }`}
                             >
-                                <td className="p-3 text-center">
+                                <td className="p-3 text-center" onClick={(e) => e.stopPropagation()}>
                                     <input
                                         type="checkbox"
                                         checked={selectedIds.has(id)}
@@ -238,7 +257,11 @@ export default function CentroLucrosPage() {
                 </button>
             </div>
             {exibindoFormulario && (
-                <FormCentroLucros onSalvar={salvarFormulario} onCancelar={cancelarModal} />
+                <FormCentroLucros
+                    onSalvar={salvarFormulario}
+                    onCancelar={cancelarModal}
+                    registro={registroEditando} // ← importante
+                />
             )}
         </div>
     );
