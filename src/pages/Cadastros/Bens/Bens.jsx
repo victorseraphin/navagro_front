@@ -1,24 +1,49 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import FormBem from "./FormBem";
+import axios from "../../../api/axios";
+import API_URL from "../../../config";
 
-const dadosIniciais = [
-    { id: 1, descricao: "BOMBA FILTRO INTERNO JP-023F", criterio: "UN", valor: 95.0 },
-    { id: 2, descricao: "BOMBA SUBMERSA 2500 L/H", criterio: "UN", valor: 239.0 },
-    { id: 3, descricao: "CERCA ARAME FARPADO", criterio: "UN", valor: 10000.0 },
-    { id: 4, descricao: "CHOCADERA ELÉTRICA", criterio: "UN", valor: 660.0 },
-    { id: 5, descricao: "LAMPADA DE AQUECIMENTO", criterio: "UN", valor: 220.0 },
-    { id: 6, descricao: "MANGUEIRO (CURRAL)", criterio: "UN", valor: 12000.0 },
-    { id: 7, descricao: "PISCINA CIRCULAR INFLAVEL 2.400 LITROS", criterio: "UN", valor: 315.0 },
-];
 
 export default function BensPage() {
-    const [dados, setDados] = useState(dadosIniciais);
+    const [dados, setDados] = useState([]);
     const [filtroDescricao, setFiltroDescricao] = useState("");
     const [criterioAlocacao, setCriterioAlocacao] = useState("");
     const [selectedIds, setSelectedIds] = useState(new Set());
     const [paginaAtual, setPaginaAtual] = useState(1);
+    const [carregando, setCarregando] = useState(false); // ← ADICIONE ESTA LINHA
+    const [erro, setErro] = useState(null);
 
-    const itensPorPagina = 5;
+    const buscarDados = async () => {
+        setCarregando(true);
+        setErro(null);
+
+        try {
+            const params = {};
+            if (filtroDescricao) params.descricao = filtroDescricao;
+
+            const response = await axios.get(`${API_URL}/v1/cadastros/bens`, { params });
+
+            const dadosConvertidos = response.data
+                .filter((item) => !item.deletedAt)
+                .map((item) => ({
+                    id: item.id,
+                    descricao: item.descricao,
+                    criterio: item.unidade,
+                    valor: item.valorNovo,
+                }));
+
+            setDados(dadosConvertidos);
+            setPaginaAtual(1);
+        } catch (err) {
+            setErro(err.response?.data?.message || err.message || "Erro ao buscar bens");
+        } finally {
+            setCarregando(false);
+        }
+    };
+
+
+
+    const itensPorPagina = 10;
 
     // Filtra dados pela descrição e critério de alocação (se usar)
     const dadosFiltrados = useMemo(() => {
@@ -105,6 +130,10 @@ export default function BensPage() {
     const handleRateio = () => alert("Rateio clicado");
     const handleDepreciacao = () => alert("Depreciação clicada");
 
+    useEffect(() => {
+        buscarDados();
+    }, []);
+
     return (
         <div className="p-4 px-8 max-w-full mx-auto">
             {/* Filtros */}
@@ -148,7 +177,7 @@ export default function BensPage() {
                 {/* Botão alinhado à esquerda, abaixo dos inputs */}
                 <div className="mt-6 flex justify-start">
                     <button
-                        onClick={() => setPaginaAtual(1)}
+                        onClick={buscarDados}
                         className="bg-emerald-500 text-white px-3 py-0.5 rounded hover:bg-emerald-600 transition-shadow shadow-md"
                     >
                         Procurar
@@ -197,6 +226,12 @@ export default function BensPage() {
 
             {/* Tabela */}
             <div className="overflow-x-auto border border-gray-300 rounded shadow-sm">
+                {carregando && (
+                    <div className="text-center text-gray-600 my-4">Carregando dados...</div>
+                )}
+                {erro && (
+                    <div className="text-center text-red-500 my-4">Erro: {erro}</div>
+                )}
                 <table className="min-w-full text-sm">
                     <thead className="bg-gray-100 border-b border-gray-300">
                         <tr>

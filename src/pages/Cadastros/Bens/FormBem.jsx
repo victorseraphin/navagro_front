@@ -34,26 +34,30 @@ export default function FormBem({ onSalvar, onCancelar, registro }) {
   return (
     <div className="fixed inset-0 z-50 bg-white flex flex-col overflow-auto">
       {/* Barra superior */}
-      <div className="flex items-center justify-between px-4 py-3 border-b shadow-sm sticky top-0 bg-lime-900 z-10 text-white">
+      <div className="flex items-center justify-between h-14 border-b shadow-sm sticky top-0 bg-emerald-600 z-10 text-white">
+        {/* Botão X colado à esquerda */}
         <button
           onClick={onCancelar}
-          className="flex items-center gap-2 px-4 py-1.5 rounded-full hover:bg-lime-950"
+          className="h-full aspect-square flex items-center justify-center hover:bg-emerald-700"
           aria-label="Fechar"
         >
-          <FiX className="text-red-500 text-xl bg-red rounded-full p-0.5" />
+          <FiX className="text-red-500 text-2xl" />
         </button>
 
+        {/* Título central */}
         <h2 className="text-base font-semibold text-white">
-          {registro ? "Editar Bem" : "Novo Bem"}
+          {registro ? "Editar Bens" : "Cadastrar Bens"}
         </h2>
 
+        {/* Botão salvar colado à direita */}
         <button
           onClick={handleSalvar}
-          className="text-sm font-medium bg-lime-900 text-white px-4 py-1.5 rounded-full hover:bg-lime-950"
+          className="h-full px-6 flex items-center justify-center text-sm font-medium bg-emerald-600 text-white hover:bg-emerald-700"
         >
           Salvar
         </button>
       </div>
+
 
       {/* Conteúdo do formulário */}
       <div className="flex-1 px-6 py-6 overflow-y-auto">
