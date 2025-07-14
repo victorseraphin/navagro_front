@@ -87,6 +87,8 @@ export default function BensPage() {
     };
 
     const salvarFormulario = (registro) => {
+        console.log(registro);
+        
         if (registroEditando) {
             setDados((prev) =>
                 prev.map((b) => (b.id === registro.id ? registro : b))
@@ -247,7 +249,8 @@ export default function BensPage() {
                             </th>
                             <th className="p-3 text-left font-semibold">Descrição</th>
                             <th className="p-3 text-left font-semibold">Critério</th>
-                            <th className="p-3 text-left font-semibold">Valor</th>
+                            <th className="p-3 text-left font-semibold">Valor Novo</th>
+                            <th className="p-3 text-left font-semibold">Valor Sucata</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -259,7 +262,7 @@ export default function BensPage() {
                             </tr>
                         )}
 
-                        {dadosPaginaAtual.map(({ id, descricao, criterio, valor }) => (
+                        {dadosPaginaAtual.map(({ id, descricao, criterio, valor_novo, valor_sucata }) => (
                             <tr
 
                                 key={id}
@@ -277,7 +280,13 @@ export default function BensPage() {
                                 <td className="p-3">{descricao}</td>
                                 <td className="p-3">{criterio}</td>
                                 <td className="p-3">
-                                    {valor.toLocaleString("pt-BR", {
+                                    {valor_novo.toLocaleString("pt-BR", {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
+                                    })}
+                                </td>
+                                <td className="p-3">
+                                    {valor_sucata.toLocaleString("pt-BR", {
                                         minimumFractionDigits: 2,
                                         maximumFractionDigits: 2,
                                     })}
