@@ -77,7 +77,7 @@ export default function FormBem({ onSalvar, onCancelar, registro }) {
         <form className="w-full flex flex-col gap-6" onSubmit={(e) => e.preventDefault()}>
           {/* Linha: Descrição e Critério */}
           <div className="flex flex-col lg:flex-row gap-4 w-full">
-            <div className="w-full lg:w-2/3">
+            <div className="w-full lg:w-2/4">
               <label className="block text-sm font-medium text-gray-600 mb-1">Descrição</label>
               <input
                 type="text"
@@ -90,7 +90,7 @@ export default function FormBem({ onSalvar, onCancelar, registro }) {
               )}
             </div>
 
-            <div className="w-full lg:w-1/3">
+            <div className="w-full lg:w-1/4">
               <label className="block text-sm font-medium text-gray-600 mb-1">Critério</label>
               <select
                 {...register("criterio", { required: "Critério obrigatório" })}
@@ -106,7 +106,7 @@ export default function FormBem({ onSalvar, onCancelar, registro }) {
               )}
             </div>
 
-            <div className="w-full md:w-1/3">
+            <div className="w-full md:w-1/4">
               <label className="block text-sm font-medium text-gray-600 mb-1">Data Inicial</label>
               <input
                 type="date"
@@ -117,11 +117,8 @@ export default function FormBem({ onSalvar, onCancelar, registro }) {
                 <p className="text-sm text-red-500 mt-1">{errors.dataInicial.message}</p>
               )}
             </div>
-          </div>
-
-          {/* Linha: Valor */}
-          <div className="flex flex-col md:flex-row gap-4 w-full">
-            <div className="w-full lg:w-1/3">
+            
+            <div className="w-full lg:w-1/4">
               <label className="block text-sm font-medium text-gray-600 mb-1">Centro de Custo</label>
               <select
                 {...register("centro_custo", { required: "Centro de custo obrigatório" })}
@@ -136,6 +133,10 @@ export default function FormBem({ onSalvar, onCancelar, registro }) {
                 <p className="text-sm text-red-500 mt-1">{errors.centro_custo.message}</p>
               )}
             </div>
+          </div>
+
+          {/* Linha: Valor */}
+          <div className="flex flex-col md:flex-row gap-4 w-full">
             <div className="w-full md:w-1/3">
               <label className="block text-sm font-medium text-gray-600 mb-1">Valor novo</label>
               <input
