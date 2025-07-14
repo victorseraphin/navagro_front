@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from '../auth/AuthContext';
+import { useAuth } from '../../hooks/AuthContext';
 
 export default function LoginPage() {
   const { login, loading } = useAuth();
@@ -19,7 +19,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="flex items-center justify-center bg-gray-50">
       <form
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded-md shadow-md w-full max-w-sm"
@@ -28,7 +28,7 @@ export default function LoginPage() {
         {error && <p className="text-red-600 mb-4">{error}</p>}
         <input
           type="text"
-          placeholder="Usuário"
+          placeholder="E-mail"
           value={username}
           onChange={e => setUsername(e.target.value)}
           className="border p-3 rounded w-full mb-4"
