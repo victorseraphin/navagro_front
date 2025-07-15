@@ -88,7 +88,7 @@ export default function BensPage() {
 
     const salvarFormulario = (registro) => {
         console.log(registro);
-        
+
         if (registroEditando) {
             setDados((prev) =>
                 prev.map((b) => (b.id === registro.id ? registro : b))
